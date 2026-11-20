@@ -36,12 +36,20 @@ services:
 
   worker:
     <<: *app
+    restart: unless-stopped   # queue:work sale al cumplir --max-time
+    depends_on:
+      app:
+        condition: service_healthy
     command: ["php", "artisan", "queue:work", "--tries=3", "--max-time=3600"]
     healthcheck:
       disable: true
 
   scheduler:
     <<: *app
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
     command: ["php", "artisan", "schedule:work"]
     healthcheck:
       disable: true
