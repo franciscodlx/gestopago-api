@@ -1,0 +1,17 @@
+meta {
+  name: Transacciones de un negocio
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/v1/businesses/{{businessId}}/transactions?from=2026-11-01&to=2026-11-30
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("200 OK", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

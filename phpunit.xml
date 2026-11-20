@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>app</directory>
+        </include>
+    </source>
+    <groups>
+        <exclude>
+            <group>pgsql</group>
+        </exclude>
+    </groups>
+    <php>
+        <env name="APP_ENV" value="testing" force="true"/>
+        <env name="APP_MAINTENANCE_DRIVER" value="file" force="true"/>
+        <env name="BCRYPT_ROUNDS" value="4" force="true"/>
+        <env name="BROADCAST_CONNECTION" value="null" force="true"/>
+        <env name="CACHE_STORE" value="array" force="true"/>
+        <env name="DB_CONNECTION" value="sqlite" force="false"/>
+        <env name="DB_DATABASE" value=":memory:" force="false"/>
+        <env name="DB_URL" value=""/>
+        <env name="MAIL_MAILER" value="array" force="true"/>
+        <env name="QUEUE_CONNECTION" value="sync" force="true"/>
+        <env name="SESSION_DRIVER" value="array" force="true"/>
+        <env name="PULSE_ENABLED" value="false" force="true"/>
+        <env name="TELESCOPE_ENABLED" value="false" force="true"/>
+        <env name="NIGHTWATCH_ENABLED" value="false" force="true"/>
+        <env name="GESTOPAGO_BASE_URL" value="https://gestopago.test" force="true"/>
+        <env name="GESTOPAGO_TOKEN_PATH" value="/token" force="true"/>
+        <env name="GESTOPAGO_ECHO_PATH" value="/echo" force="true"/>
+        <env name="GESTOPAGO_VALIDATE_ME_PATH" value="/validateMe" force="true"/>
+        <env name="GESTOPAGO_BALANCE_PATH" value="/balance" force="true"/>
+        <env name="GESTOPAGO_PRODUCTS_PATH" value="/products" force="true"/>
+        <env name="GESTOPAGO_SEND_TX_PATH" value="/sendTx" force="true"/>
+        <env name="GESTOPAGO_CONFIRM_TX_PATH" value="/confirmTx" force="true"/>
+        <env name="GESTOPAGO_VERIFY_REFERENCE_PATH" value="/verifyReference" force="true"/>
+        <env name="GESTOPAGO_DISTRIBUTOR_ID" value="1" force="true"/>
+        <env name="GESTOPAGO_DEVICE_CODE" value="TEST-DEVICE" force="true"/>
+        <env name="GESTOPAGO_PASSWORD" value="test-password" force="true"/>
+        <!-- Claves AES de prueba (no son las del sandbox) -->
+        <env name="GESTOPAGO_SECRET_KEY" value="AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=" force="true"/>
+        <env name="GESTOPAGO_SECRET_IV" value="AAECAwQFBgcICQoLDA0ODw==" force="true"/>
+        <env name="GESTOPAGO_TOKEN_STORE" value="cache" force="true"/>
+        <env name="GESTOPAGO_RETRIES" value="0" force="true"/>
+        <env name="GESTOPAGO_LOW_BALANCE_NOTIFY_URL" value="https://core.test/gp/avisosaldo" force="true"/>
+        <env name="GESTOPAGO_DIAGNOSTICS_ENABLED" value="true" force="true"/>
+        <env name="GESTOPAGO_LEGACY_ROUTES" value="true" force="true"/>
+        <env name="API_KEY_CACHE_TTL" value="0" force="true"/>
+    </php>
+</phpunit>

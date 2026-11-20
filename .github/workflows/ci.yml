@@ -1,0 +1,43 @@
+# Stub — la lógica vive en franciscodlx/ci-projects (laravel-ci.yml, secret-scan.yml).
+# CI nuevo: allow-failure hasta verlo verde una semana (política del hub).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    uses: franciscodlx/ci-projects/.github/workflows/laravel-ci.yml@v1
+    with:
+      php-versions: '["8.4", "8.5"]'
+      php-extensions: 'mbstring, bcmath, intl, pdo_pgsql, pgsql, sqlite3, pdo_sqlite'
+      coverage: pcov
+      validate-composer: true
+      lint-command: vendor/bin/pint --test
+      analyse-command: vendor/bin/phpstan analyse --memory-limit=1G --no-progress
+      postgres-image: postgres:17-alpine
+      test-env: |
+        DB_CONNECTION=pgsql
+        DB_HOST=127.0.0.1
+        DB_PORT=5432
+        DB_DATABASE=app_test
+        DB_USERNAME=app
+        DB_PASSWORD=app
+      prepare-command: >-
+        cp .env.example .env && php artisan key:generate --no-interaction &&
+        PGPASSWORD=app psql -h 127.0.0.1 -U app -d app_test -v ON_ERROR_STOP=1 -q -f database/sql/gestopago_schema.sql
+      test-command: vendor/bin/pest --group=default --group=pgsql --coverage --min=90 --coverage-clover=coverage.xml
+      coverage-file: coverage.xml
+      allow-failure: true
+
+  secrets:
+    permissions:
+      contents: read
+      pull-requests: read
+    uses: franciscodlx/ci-projects/.github/workflows/secret-scan.yml@v1

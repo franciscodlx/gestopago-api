@@ -1,0 +1,23 @@
+meta {
+  name: Cifrar payload (sandbox)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/diagnostics/encrypt
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "payload": { "idServicio": 1, "referencia": "123" }
+  }
+}
+
+tests {
+  test("200 OK", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

@@ -1,0 +1,17 @@
+meta {
+  name: Consultar respuesta
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/payments/{{upc}}
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("200 OK", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Actualizar comisión
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/commissions/{{commissionId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "commission": "4"
+  }
+}
+
+tests {
+  test("200 OK", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

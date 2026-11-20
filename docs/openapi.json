@@ -1,0 +1,1200 @@
+{
+    "openapi": "3.1.2",
+    "info": {
+        "title": "Gesto Pago API",
+        "version": "1.0.0",
+        "description": "Servicio de pagos de servicios, recargas y PINs a trav\u00e9s de **Gesto Pago**.\n\nAutenticaci\u00f3n: header `X-Api-Key`. Los montos van en MXN. Cada pago devuelve un `upc`\n(referencia interna) con el que se confirma o consulta la transacci\u00f3n.\n\nLas rutas heredadas `/api/{PRODUCTION|DEVELOP}/*` de wsgestopago siguen disponibles\npero no se documentan aqu\u00ed (ver `docs/MIGRATION.md`)."
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080/api/v1"
+        }
+    ],
+    "security": [
+        {
+            "apiKey": []
+        }
+    ],
+    "paths": {
+        "/categories": {
+            "get": {
+                "operationId": "v1.catalog.categories",
+                "summary": "Categor\u00edas de servicios",
+                "tags": [
+                    "Cat\u00e1logo",
+                    "Catalog"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "additionalProperties": {}
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/{categoryId}/products": {
+            "get": {
+                "operationId": "v1.catalog.products",
+                "summary": "Productos de una categor\u00eda",
+                "tags": [
+                    "Cat\u00e1logo",
+                    "Catalog"
+                ],
+                "parameters": [
+                    {
+                        "name": "categoryId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "additionalProperties": {}
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/catalog/sync": {
+            "post": {
+                "operationId": "v1.catalog.sync",
+                "description": "Tambi\u00e9n disponible como `php artisan gestopago:sync-products` (programado a diario).",
+                "summary": "Sincronizar cat\u00e1logo con Gesto Pago",
+                "tags": [
+                    "Cat\u00e1logo",
+                    "Catalog"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "synced": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "synced"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/businesses/{businessId}/commissions": {
+            "get": {
+                "operationId": "v1.commissions.index",
+                "summary": "Comisiones de un negocio",
+                "tags": [
+                    "Comisiones",
+                    "Commission"
+                ],
+                "parameters": [
+                    {
+                        "name": "businessId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "additionalProperties": {}
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "operationId": "v1.commissions.store",
+                "summary": "Registrar comisi\u00f3n de un negocio",
+                "tags": [
+                    "Comisiones",
+                    "Commission"
+                ],
+                "parameters": [
+                    {
+                        "name": "businessId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CommissionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "additionalProperties": {}
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/commissions/{commissionId}": {
+            "patch": {
+                "operationId": "v1.commissions.update",
+                "summary": "Actualizar comisi\u00f3n",
+                "tags": [
+                    "Comisiones",
+                    "Commission"
+                ],
+                "parameters": [
+                    {
+                        "name": "commissionId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CommissionRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "additionalProperties": {}
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/diagnostics/encrypt": {
+            "post": {
+                "operationId": "v1.diagnostics.encrypt",
+                "description": "Devuelve el valor `signed` que se enviar\u00eda a Gesto Pago para el objeto dado.",
+                "summary": "Cifrar payload",
+                "tags": [
+                    "Diagn\u00f3stico",
+                    "Diagnostics"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EncryptPayloadRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "signed": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "signed"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/diagnostics/token": {
+            "get": {
+                "operationId": "v1.diagnostics.token",
+                "summary": "JWT vigente del proveedor",
+                "tags": [
+                    "Diagn\u00f3stico",
+                    "Diagnostics"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "token"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gateway/echo": {
+            "get": {
+                "operationId": "v1.gateway.echo",
+                "summary": "Eco (prueba de conectividad con el proveedor)",
+                "tags": [
+                    "Gesto Pago",
+                    "Gateway"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gateway/me": {
+            "get": {
+                "operationId": "v1.gateway.me",
+                "summary": "Datos del distribuidor/dispositivo autenticado (validateMe)",
+                "tags": [
+                    "Gesto Pago",
+                    "Gateway"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gateway/balance": {
+            "get": {
+                "operationId": "v1.gateway.balance",
+                "summary": "Saldo disponible con el proveedor",
+                "tags": [
+                    "Gesto Pago",
+                    "Gateway"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/payments": {
+            "post": {
+                "operationId": "v1.payments.store",
+                "description": "Registra la transacci\u00f3n, la env\u00eda cifrada a Gesto Pago y devuelve la autorizaci\u00f3n.\nUn rechazo del proveedor responde 422 con el `upc` para darle seguimiento.",
+                "summary": "Enviar pago",
+                "tags": [
+                    "Pagos",
+                    "Payment"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StorePaymentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`PaymentResultResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PaymentResultResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/payments/{upc}": {
+            "get": {
+                "operationId": "v1.payments.show",
+                "summary": "Respuesta registrada de un pago",
+                "tags": [
+                    "Pagos",
+                    "Payment"
+                ],
+                "parameters": [
+                    {
+                        "name": "upc",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/payments/{upc}/confirm": {
+            "post": {
+                "operationId": "v1.payments.confirm",
+                "description": "Reenv\u00eda la solicitud original al proveedor para conocer el estado definitivo.",
+                "summary": "Confirmar pago",
+                "tags": [
+                    "Pagos",
+                    "Payment"
+                ],
+                "parameters": [
+                    {
+                        "name": "upc",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/references/verify": {
+            "post": {
+                "operationId": "v1.references.verify",
+                "description": "Valida una referencia (recibo, contrato) con el proveedor antes de cobrar.",
+                "summary": "Verificar referencia",
+                "tags": [
+                    "Pagos",
+                    "Reference"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VerifyReferenceRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "additionalProperties": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/businesses/{businessId}/transactions": {
+            "get": {
+                "operationId": "v1.transactions.index",
+                "summary": "Transacciones de un negocio en un rango de fechas",
+                "tags": [
+                    "Pagos",
+                    "Transaction"
+                ],
+                "parameters": [
+                    {
+                        "name": "businessId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "required": true,
+                        "description": "Fecha inicial (inclusive), formato Y-m-d.",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "required": true,
+                        "description": "Fecha final (inclusive), formato Y-m-d.",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "additionalProperties": {}
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "description": "Error overview."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "apiKey": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-Api-Key"
+            }
+        },
+        "schemas": {
+            "CommissionRequest": {
+                "type": "object",
+                "properties": {
+                    "commission": {
+                        "type": "string",
+                        "description": "Comisi\u00f3n que cobra el negocio (valor que interpreta la funci\u00f3n de BD).",
+                        "maxLength": 255
+                    }
+                },
+                "required": [
+                    "commission"
+                ],
+                "title": "CommissionRequest"
+            },
+            "EncryptPayloadRequest": {
+                "type": "object",
+                "properties": {
+                    "payload": {
+                        "type": "array",
+                        "description": "Objeto JSON a cifrar con AES-256-CBC tal como lo har\u00eda el servicio.",
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 1
+                    }
+                },
+                "required": [
+                    "payload"
+                ],
+                "title": "EncryptPayloadRequest"
+            },
+            "PaymentResultResource": {
+                "type": "object",
+                "properties": {
+                    "transactionId": {
+                        "type": "string",
+                        "description": "ID_TX de Gesto Pago."
+                    },
+                    "authorizationNumber": {
+                        "type": "string",
+                        "description": "NUM_AUTORIZACION que se imprime en el ticket."
+                    },
+                    "upc": {
+                        "type": "string",
+                        "description": "Referencia interna para confirmar o consultar la transacci\u00f3n."
+                    },
+                    "pin": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "PIN (tarjetas de regalo / servicios digitales)."
+                    },
+                    "legend": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Leyenda legal que debe mostrarse al cliente."
+                    }
+                },
+                "required": [
+                    "transactionId",
+                    "authorizationNumber",
+                    "upc",
+                    "pin",
+                    "legend"
+                ],
+                "title": "PaymentResultResource"
+            },
+            "StorePaymentRequest": {
+                "type": "object",
+                "properties": {
+                    "businessId": {
+                        "type": "integer",
+                        "description": "Id del negocio (farmacia) que cobra el servicio.",
+                        "minimum": 1
+                    },
+                    "idServicio": {
+                        "type": "integer",
+                        "description": "Servicio de Gesto Pago (ver GET /categories/{id}/products).",
+                        "minimum": 1
+                    },
+                    "idProducto": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "referencia": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "N\u00famero de referencia del recibo o cuenta (pagos de servicios).",
+                        "maxLength": 64
+                    },
+                    "telefono": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Tel\u00e9fono a 10 d\u00edgitos (recargas).",
+                        "pattern": "^\\d{10}$"
+                    },
+                    "montoPago": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "description": "Monto a pagar en MXN (servicios con monto abierto).",
+                        "minimum": 0,
+                        "maximum": 999999.99
+                    }
+                },
+                "required": [
+                    "businessId",
+                    "idServicio",
+                    "idProducto"
+                ],
+                "title": "StorePaymentRequest"
+            },
+            "VerifyReferenceRequest": {
+                "type": "object",
+                "properties": {
+                    "idServicio": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "referencia": {
+                        "type": "string",
+                        "maxLength": 64
+                    }
+                },
+                "required": [
+                    "idServicio",
+                    "referencia"
+                ],
+                "title": "VerifyReferenceRequest"
+            }
+        },
+        "responses": {
+            "ValidationException": {
+                "description": "Validation error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Errors overview."
+                                },
+                                "errors": {
+                                    "type": "object",
+                                    "description": "A detailed description of each field that failed validation.",
+                                    "additionalProperties": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            },
+                            "required": [
+                                "message",
+                                "errors"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

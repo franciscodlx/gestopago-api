@@ -1,0 +1,21 @@
+meta {
+  name: responseTx
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/{{legacyEnv}}/responseTx
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "upc": "{{upc}}"
+  }
+}
+
+headers {
+  key: {{apiKey}}
+}

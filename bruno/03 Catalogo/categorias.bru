@@ -1,0 +1,17 @@
+meta {
+  name: Categorías
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/categories
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("200 OK", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

@@ -1,0 +1,78 @@
+# Entorno local: API + worker + scheduler + PostgreSQL + Redis.
+#   cp .env.example .env   (y completa GESTOPAGO_*)
+#   docker compose up -d --build
+#   API:     http://localhost:8080        Docs: http://localhost:8080/docs/api
+#   API key local: local-dev-key  (database/sql/seed_local.sql)
+
+x-app: &app
+  build:
+    context: .
+    target: dev
+  image: gestopago-api:dev
+  # Laravel lee el .env montado; aquí solo lo que cambia dentro de la red de compose.
+  environment: &app-env
+    DB_HOST: postgres
+    DB_PORT: 5432
+    DB_DATABASE: gestopago
+    DB_USERNAME: gestopago
+    DB_PASSWORD: secret
+    REDIS_HOST: redis
+  volumes:
+    - .:/app
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  app:
+    <<: *app
+    environment:
+      <<: *app-env
+      RUN_MIGRATIONS: "true"
+    ports:
+      - "${APP_PORT:-8080}:8080"
+
+  worker:
+    <<: *app
+    command: ["php", "artisan", "queue:work", "--tries=3", "--max-time=3600"]
+    healthcheck:
+      disable: true
+
+  scheduler:
+    <<: *app
+    command: ["php", "artisan", "schedule:work"]
+    healthcheck:
+      disable: true
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: gestopago
+      POSTGRES_USER: gestopago
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "${FORWARD_DB_PORT:-5433}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/sql:/sql:ro
+      - ./docker/postgres/init.sh:/docker-entrypoint-initdb.d/10-init.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gestopago -d gestopago"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${FORWARD_REDIS_PORT:-6380}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:

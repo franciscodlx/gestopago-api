@@ -1,0 +1,18 @@
+headers {
+  X-Api-Key: {{apiKey}}
+  Accept: application/json
+}
+
+auth {
+  mode: none
+}
+
+docs {
+  # Gesto Pago API
+
+  1. Elige el ambiente (`local` usa docker compose y la key `local-dev-key`).
+  2. Corre **02 Pagos / Enviar pago**: guarda `upc` en una variable de ejecución.
+  3. **Consultar respuesta** y **Confirmar** usan ese `upc`.
+
+  OpenAPI: `{{baseUrl}}/docs/api.json` · Swagger UI: `{{baseUrl}}/docs/swagger`
+}

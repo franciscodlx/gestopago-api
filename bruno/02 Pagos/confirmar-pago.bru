@@ -1,0 +1,17 @@
+meta {
+  name: Confirmar pago
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/payments/{{upc}}/confirm
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("200 OK", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}
